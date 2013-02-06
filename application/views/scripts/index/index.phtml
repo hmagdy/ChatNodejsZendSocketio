@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Hopa fel btates</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+        <script src="js/socket.io.js"></script>
+        <script>
+            name = prompt("Please enter your name","Harry Potter");
+            socket = io.connect('http://localhost:8000');
+            // on connection to server, ask for user's name with an anonymous callback
+            socket.on('connect', function(){
+                // call the server-side function 'adduser' and send one parameter (value of prompt)
+                socket.emit('loadsession', ''/*to be session id*/);
+            });
+            // listener, whenever the server emits 'updatechat', this updates the chat body
+            socket.on('initNodes', function (data) {
+                $("#mainMsgInput").css("display" , "inline");
+            });
+            socket.on('updateNodes', function (data) {
+                $("body").append(data);
+            });
+
+            function callServer(){
+                var all= '<br/>' + name + ' : ' + $('#msg').val(); 
+                socket.emit('chat', all); $('#msg').val('');
+                return false;
+            }
+        </script> 
+    </head>
+    <body>    
+        <div id="output">HI all</div>
+        <div id="mainMsgInput" style="display: none">
+            <form>
+                <input type="text" name="msg" id="msg" value="" />
+                <input type="submit" value="Send" onclick="return callServer()"/>
+            </form>
+        </div>
+    </body>
+</html>
